@@ -1,4 +1,3 @@
-// Importing the Required Modules
 const fs = require('fs');
 const readline = require('readline');
 
@@ -19,7 +18,6 @@ file.on('line', (line) => {
     currentCalories = 0;
     return;
   }
-
   currentCalories = currentCalories + Number(line);
 });
 
