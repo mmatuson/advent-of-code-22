@@ -7,7 +7,10 @@ const file = readline.createInterface({
   terminal: false,
 });
 
-const ROUNDS = 20;
+const ROUNDS = 10000;
+
+const modValues = [];
+let mod = 0;
 
 class Monkey {
   constructor() {
@@ -49,7 +52,10 @@ class Monkey {
   *play() {
     let item = this.items.shift();
     while (item) {
-      const newItem = Math.floor(this.opFn(item) / 3);
+      // part 1
+      // const newItem = Math.floor(this.opFn(item) / 3);
+      // part 2
+      const newItem = this.opFn(item) % mod;
       this.inspectCount += 1;
       yield [newItem, this.testFn(newItem) ? this.friends[0] : this.friends[1]];
 
@@ -81,7 +87,10 @@ function parse(line) {
   }
 
   if (data[0] === 'Test:') {
-    currentMonkey.setTestFn(data[data.length - 1]);
+    m = data[data.length - 1];
+    currentMonkey.setTestFn(m);
+    // tracking for part 2
+    modValues.push(m);
   }
   if (data[0] === 'If') {
     currentMonkey.addFriend(Number(data[data.length - 1]));
@@ -90,6 +99,9 @@ function parse(line) {
 
 file.on('line', parse);
 file.on('close', () => {
+  // part 2: find the product of the monkeys mod values
+  mod = modValues.reduce((total, i) => total * i);
+
   for (let round = 0; round < ROUNDS; round++) {
     for (let monkey in BunchOfMonkeys) {
       let game = BunchOfMonkeys[monkey].play().next();
@@ -104,7 +116,6 @@ file.on('close', () => {
   }
 
   console.log('Happy Holidays: Day 11!');
-  console.group('Part 1:');
   console.group(`After ${ROUNDS} rounds:`);
   for (let monkey in BunchOfMonkeys) {
     console.log(`Monkey ${monkey} inspected items N times: `, BunchOfMonkeys[monkey].inspectCount);
